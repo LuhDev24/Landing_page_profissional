@@ -1,26 +1,23 @@
 const express = require('express');
 const serverless = require('serverless-http');
 const bodyParser = require('body-parser');
-const mysql = require('mysql2/promise');
+const { Pool } = require('pg');
 const { body, validationResult } = require('express-validator');
 require('dotenv').config();
 
 const app = express();
 const router = express.Router();
-4825
+
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// Configuração do banco de dados MySQL (substitua com suas credenciais)
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '4825',
-  database: process.env.DB_DATABASE || 'Landing_page_profissional',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
+// Configuração do banco de dados PostgreSQL (Supabase)
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 // Rota para processar o formulário
@@ -37,22 +34,27 @@ router.post('/', [
 
   const { nome, telefone, email, forma_empresarial } = req.body;
 
+  let client;
+
   try {
-    const connection = await pool.getConnection();
-    const [results] = await connection.execute(
-      'INSERT INTO contatos (nome, telefone, email, forma_empresarial) VALUES (?, ?, ?, ?)',
+    client = await pool.connect();
+
+    const result = await client.query(
+      'INSERT INTO contatos (nome, telefone, email, forma_empresarial) VALUES ($1, $2, $3, $4) RETURNING id',
       [nome, telefone, email, forma_empresarial]
     );
-    connection.release();
-    res.json({ message: 'Formulário enviado com sucesso!', id: results.insertId });
+
+    res.json({ message: 'Formulário enviado com sucesso!', id: result.rows[0].id });
   } catch (err) {
     console.error('Erro ao inserir dados:', err);
     res.status(500).json({ message: 'Erro ao enviar o formulário: ' + err.message });
+  } finally {
+    if (client) {
+      client.release();
+    }
   }
 });
 
 app.use('/enviar-formulario', router);
 
 module.exports.handler = serverless(app);
-
-
