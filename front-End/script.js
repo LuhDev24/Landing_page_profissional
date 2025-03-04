@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log(data); // Adicionado para depuração
 
         try {
-            const response = await fetch('/enviar-formulario', {
+            const response = await fetch('/.netlify/functions/enviar-formulario', { // URL corrigida
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
