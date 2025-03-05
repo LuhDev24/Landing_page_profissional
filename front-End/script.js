@@ -1,9 +1,8 @@
-const supabaseKey = window.SUPABASE_KEY;
-import { createClient } from '@supabase/supabase-js';
+importar { createClient } de '@supabase/supabase-js'   
 
-const supabaseUrl = 'https://qhyncrjcgqiuyjvahqia.supabase.co';
-const supabaseKey = process.env.SUPABASE_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabaseUrl = 'https://qhyncrjcgqiuyjvahqia.supabase.co' 
+const supabaseKey = processo . env . SUPABASE_KEY
+const supabase = createClient ( supabaseUrl , supabaseKey ) 
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Documento carregado e pronto.');
