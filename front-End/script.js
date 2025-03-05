@@ -1,3 +1,4 @@
+const supabaseKey = window.SUPABASE_KEY;
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = 'https://qhyncrjcgqiuyjvahqia.supabase.co';
